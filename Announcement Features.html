@@ -16,6 +16,126 @@
     min-height: 100vh;
   }
 
+  /* ── LOGIN PAGE ── */
+  #login-screen {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-height: 100vh;
+    background: #f4f5f7;
+  }
+
+  #dashboard-screen { display: none; width: 100%; display: none; }
+  #dashboard-screen.visible { display: flex; }
+
+  .login-card {
+    background: #fff;
+    border-radius: 16px;
+    padding: 2.75rem 2.5rem 2.25rem;
+    width: 100%;
+    max-width: 400px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+    animation: fadeIn 0.3s ease;
+  }
+
+  .login-logo {
+    width: 48px; height: 48px;
+    background: #e8642c;
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.4rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .login-title {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #1a1a2e;
+    margin-bottom: 0.35rem;
+  }
+
+  .login-subtitle {
+    font-size: 0.8rem;
+    color: #8a8fa3;
+    margin-bottom: 2rem;
+  }
+
+  .login-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    margin-bottom: 1.1rem;
+  }
+
+  .login-label {
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: #5a5f72;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  .login-input {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 0.875rem;
+    color: #1a1a2e;
+    background: #f9fafb;
+    border: 1.5px solid #e8eaed;
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    width: 100%;
+    transition: border-color 0.15s, box-shadow 0.15s;
+  }
+
+  .login-input:focus {
+    outline: none;
+    border-color: #e8642c;
+    background: #fff;
+    box-shadow: 0 0 0 3px rgba(232,100,44,0.1);
+  }
+
+  .login-error {
+    font-size: 0.75rem;
+    color: #e8642c;
+    margin-bottom: 1rem;
+    display: none;
+    background: #fff3ee;
+    padding: 0.5rem 0.75rem;
+    border-radius: 6px;
+    border-left: 3px solid #e8642c;
+  }
+
+  .login-error.visible { display: block; }
+
+  .btn-login {
+    width: 100%;
+    background: #e8642c;
+    color: white;
+    border: none;
+    padding: 0.8rem;
+    border-radius: 8px;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+    margin-top: 0.5rem;
+  }
+
+  .btn-login:hover { background: #d45520; transform: translateY(-1px); }
+  .btn-login:active { transform: translateY(0); }
+
+  .login-hint {
+    margin-top: 1.25rem;
+    font-size: 0.72rem;
+    color: #b0b4c1;
+    text-align: center;
+    line-height: 1.6;
+  }
+
+  .login-hint strong { color: #8a8fa3; }
+
   /* ── SIDEBAR ── */
   .sidebar {
     width: 240px;
@@ -527,6 +647,36 @@
 </head>
 <body>
 
+<!-- ══ LOGIN SCREEN ══ -->
+<div id="login-screen">
+  <div class="login-card">
+    <div class="login-logo">📢</div>
+    <div class="login-title">Welcome back</div>
+    <div class="login-subtitle">Sign in to your SuperApp dashboard</div>
+
+    <div class="login-field">
+      <label class="login-label">Username</label>
+      <input class="login-input" id="login-username" type="text" placeholder="Enter your username" onkeydown="if(event.key==='Enter') doLogin()">
+    </div>
+
+    <div class="login-field">
+      <label class="login-label">Password</label>
+      <input class="login-input" id="login-password" type="password" placeholder="Enter your password" onkeydown="if(event.key==='Enter') doLogin()">
+    </div>
+
+    <div class="login-error" id="login-error">❌ Incorrect username or password. Please try again.</div>
+
+    <button class="btn-login" onclick="doLogin()">Sign In</button>
+
+    <div class="login-hint">
+      Demo credentials — Username: <strong>admin</strong> · Password: <strong>admin123</strong>
+    </div>
+  </div>
+</div>
+
+<!-- ══ DASHBOARD SCREEN ══ -->
+<div id="dashboard-screen">
+
 <!-- SIDEBAR -->
 <aside class="sidebar">
   <div class="user-section">
@@ -549,7 +699,7 @@
     <a class="nav-item" href="#" onclick="navigateTo('announcement', this); return false;">
       <span class="nav-icon">📢</span> Announcement
     </a>
-    <a class="nav-item" href="#" onclick="navigateTo('logout', this); return false;">
+    <a class="nav-item" href="#" onclick="doLogout(); return false;">
       <span class="nav-icon">🚪</span> Logout
     </a>
   </nav>
@@ -567,398 +717,4 @@
         <button class="btn-create" onclick="alert('Create AI News clicked!')">Create AI</button>
       </div>
 
-      <div class="tabs">
-        <div class="tab active" onclick="switchTab(this, 'active', 'ainews-grid', 'ainews-empty')">Active</div>
-        <div class="tab" onclick="switchTab(this, 'unpublished', 'ainews-grid', 'ainews-empty')">Unpublished</div>
-        <div class="tab" onclick="switchTab(this, 'pending', 'ainews-grid', 'ainews-empty')">Pending</div>
-        <div class="tab" onclick="switchTab(this, 'rejected', 'ainews-grid', 'ainews-empty')">Rejected</div>
-        <div class="tab" onclick="switchTab(this, 'expired', 'ainews-grid', 'ainews-empty')">Expired</div>
-      </div>
-
-      <div class="news-grid" id="ainews-grid">
-        <div class="news-card" data-status="active">
-          <div class="news-title">HIDAYAH TESTING</div>
-          <div class="news-desc">i-Genius information testing</div>
-          <div class="news-meta">
-            <div class="meta-row"><span class="meta-icon">📅</span><span>2025-12-01 – 2026-12-24</span></div>
-            <div class="meta-row"><span class="meta-icon">#</span><span>Staycation</span></div>
-            <div class="meta-row"><span class="meta-icon">📍</span><span>Wyndham Garden</span></div>
-            <div class="meta-row"><span class="meta-icon">📍</span><span>–</span></div>
-          </div>
-          <div class="news-footer">Author: mis.intern&#64;i-city.my<br>Email: mis.intern&#64;i-city.my</div>
-        </div>
-
-        <div class="news-card" data-status="active">
-          <div class="news-title">BROOOOO</div>
-          <div class="news-desc">70% off on all items - extended!</div>
-          <div class="news-meta">
-            <div class="meta-row"><span class="meta-icon">📅</span><span>2025-11-15 – 2026-11-22</span></div>
-            <div class="meta-row"><span class="meta-icon">#</span><span>Others</span></div>
-            <div class="meta-row"><span class="meta-icon">📍</span><span>DoubleTree by Hilton</span></div>
-            <div class="meta-row"><span class="meta-icon">📍</span><span>Near Shah Alam mall</span></div>
-          </div>
-          <div class="news-footer">Author: mis.intern&#64;i-city.my<br>Email: mis.intern&#64;i-city.my</div>
-        </div>
-
-        <div class="news-card" data-status="unpublished">
-          <div class="news-title">DRAFT ARTICLE</div>
-          <div class="news-desc">This article is saved but not yet published.</div>
-          <div class="news-meta">
-            <div class="meta-row"><span class="meta-icon">📅</span><span>2026-01-10 – 2026-06-01</span></div>
-            <div class="meta-row"><span class="meta-icon">#</span><span>Technology</span></div>
-            <div class="meta-row"><span class="meta-icon">📍</span><span>i-City Shah Alam</span></div>
-          </div>
-          <div class="news-footer">Author: mis.intern&#64;i-city.my<br>Email: mis.intern&#64;i-city.my</div>
-        </div>
-
-        <div class="news-card" data-status="pending">
-          <div class="news-title">PENDING REVIEW</div>
-          <div class="news-desc">Awaiting admin approval before going live.</div>
-          <div class="news-meta">
-            <div class="meta-row"><span class="meta-icon">📅</span><span>2026-02-01 – 2026-08-01</span></div>
-            <div class="meta-row"><span class="meta-icon">#</span><span>Promotion</span></div>
-            <div class="meta-row"><span class="meta-icon">📍</span><span>Central Mall</span></div>
-          </div>
-          <div class="news-footer">Author: mis.intern&#64;i-city.my<br>Email: mis.intern&#64;i-city.my</div>
-        </div>
-
-        <div class="news-card" data-status="rejected">
-          <div class="news-title">REJECTED POST</div>
-          <div class="news-desc">This submission did not meet publication guidelines.</div>
-          <div class="news-meta">
-            <div class="meta-row"><span class="meta-icon">📅</span><span>2025-09-01 – 2025-12-01</span></div>
-            <div class="meta-row"><span class="meta-icon">#</span><span>Events</span></div>
-            <div class="meta-row"><span class="meta-icon">📍</span><span>i-City Park</span></div>
-          </div>
-          <div class="news-footer">Author: mis.intern&#64;i-city.my<br>Email: mis.intern&#64;i-city.my</div>
-        </div>
-
-        <div class="news-card" data-status="expired">
-          <div class="news-title">EXPIRED PROMO</div>
-          <div class="news-desc">This promotion has ended and is no longer active.</div>
-          <div class="news-meta">
-            <div class="meta-row"><span class="meta-icon">📅</span><span>2025-01-01 – 2025-06-30</span></div>
-            <div class="meta-row"><span class="meta-icon">#</span><span>Discount</span></div>
-            <div class="meta-row"><span class="meta-icon">📍</span><span>Wyndham Garden</span></div>
-          </div>
-          <div class="news-footer">Author: mis.intern&#64;i-city.my<br>Email: mis.intern&#64;i-city.my</div>
-        </div>
-      </div>
-
-      <div class="empty-state" id="ainews-empty">
-        <div class="empty-icon">📭</div>
-        No items in this category yet.
-      </div>
-    </div>
-  </div>
-
-  <!-- ══ ANNOUNCEMENT PAGE ══ -->
-  <div class="page-view" id="page-announcement">
-    <div class="page-title">SuperApp Announcement</div>
-    <div class="content-card">
-      <div class="card-header">
-        <div class="card-title">SuperApp Announcement</div>
-        <button class="btn-create" onclick="navigateTo('announcement-create', null)">Create New SuperApp Announcement</button>
-      </div>
-
-      <div class="tabs">
-        <div class="tab active">Active Announcement</div>
-      </div>
-
-      <div class="news-grid">
-        <div class="news-card" onclick="navigateTo('announcement-detail', null)">
-          <div class="news-title" id="ann-card-title"></div>
-          <hr class="divider" style="margin-top: 0.75rem;">
-          <div class="news-footer">
-            <span id="ann-card-author"></span><br>
-            <span id="ann-card-date"></span>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ══ ANNOUNCEMENT DETAIL PAGE ══ -->
-  <div class="page-view" id="page-announcement-detail">
-    <button class="back-btn" onclick="navigateTo('announcement', null)">← Back to Announcement</button>
-    <div class="page-title">SuperApp Announcement</div>
-    <div class="detail-card">
-      <div class="detail-card-header">
-        <div class="detail-card-title">Announcement Detail</div>
-        <button class="btn-create" onclick="navigateTo('announcement-edit', null)">Edit</button>
-      </div>
-      <div class="detail-body">
-        <div class="detail-announcement-title" id="detail-title"></div>
-        <div class="detail-fields">
-          <div class="detail-field">
-            <div class="detail-field-label">Status</div>
-            <div class="detail-field-value"><span class="status-badge">Active</span></div>
-          </div>
-          <div class="detail-field">
-            <div class="detail-field-label">Date</div>
-            <div class="detail-field-value" id="detail-date"></div>
-          </div>
-          <div class="detail-field">
-            <div class="detail-field-label">Author</div>
-            <div class="detail-field-value" id="detail-author"></div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ══ ANNOUNCEMENT EDIT PAGE ══ -->
-  <div class="page-view" id="page-announcement-edit">
-    <button class="back-btn" onclick="navigateTo('announcement-detail', null)">← Back to Detail</button>
-    <div class="page-title">SuperApp Announcement</div>
-    <div class="detail-card">
-      <div class="detail-card-header">
-        <div class="detail-card-title">Edit Announcement</div>
-      </div>
-      <div class="detail-body">
-        <div class="edit-field-group">
-
-          <div class="edit-field">
-            <label class="edit-label">Announcement Title</label>
-            <textarea class="edit-textarea" id="edit-title" rows="2" oninput="autoQuote(this)">RAYA RAYA RAYA PROMO 50% DISCOUNT FOR DIGITAL SPORT ARENA</textarea>
-          </div>
-
-          <div class="edit-field">
-            <label class="edit-label">Date</label>
-            <input class="edit-input" id="edit-date-display" type="text" disabled style="opacity:0.5; cursor:not-allowed;">
-            <span style="font-size:0.7rem; color:#b0b4c1; margin-top:0.25rem;">Auto-filled</span>
-          </div>
-
-          <div class="edit-field">
-            <label class="edit-label">Author</label>
-            <input class="edit-input" id="edit-author-display" type="text" disabled style="opacity:0.5; cursor:not-allowed;">
-            <span style="font-size:0.7rem; color:#b0b4c1; margin-top:0.25rem;">Auto-filled</span>
-          </div>
-
-        </div>
-
-        <div class="edit-card-footer">
-          <button class="btn-cancel" onclick="navigateTo('announcement-detail', null)">Cancel</button>
-          <button class="btn-save" onclick="saveAnnouncement()">Save</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ══ ANNOUNCEMENT CREATE PAGE ══ -->
-  <div class="page-view" id="page-announcement-create">
-    <button class="back-btn" onclick="navigateTo('announcement', null)">← Back to Announcement</button>
-    <div class="page-title">SuperApp Announcement</div>
-    <div class="detail-card">
-      <div class="detail-card-header">
-        <div class="detail-card-title">Create New Announcement</div>
-      </div>
-      <div class="detail-body">
-        <div class="edit-field-group">
-
-          <div class="edit-field">
-            <label class="edit-label">Announcement Title</label>
-            <textarea class="edit-textarea" id="create-title" rows="2" placeholder='Type your announcement here...' oninput="autoQuote(this)"></textarea>
-          </div>
-
-          <div class="edit-field">
-            <label class="edit-label">Date</label>
-            <input class="edit-input" type="text" value="2025-03-06" disabled style="opacity:0.5; cursor:not-allowed;">
-            <span style="font-size:0.7rem; color:#b0b4c1; margin-top:0.25rem;">Auto-filled</span>
-          </div>
-
-          <div class="edit-field">
-            <label class="edit-label">Author</label>
-            <input class="edit-input" type="text" value="mis.intern@i-city.my" disabled style="opacity:0.5; cursor:not-allowed;">
-            <span style="font-size:0.7rem; color:#b0b4c1; margin-top:0.25rem;">Auto-filled</span>
-          </div>
-
-        </div>
-
-        <div class="edit-card-footer">
-          <button class="btn-cancel" onclick="navigateTo('announcement', null)">Cancel</button>
-          <button class="btn-save" onclick="saveNewAnnouncement()">Save</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ══ GOSSIP PAGE (placeholder) ══ -->
-  <div class="page-view" id="page-gossip">
-    <div class="page-title">Gossip</div>
-    <div class="content-card">
-      <div class="card-header">
-        <div class="card-title">Gossip</div>
-        <button class="btn-create">Create Gossip</button>
-      </div>
-      <div class="empty-state" style="display:block;">
-        <div class="empty-icon">🎉</div>
-        No gossip yet. Be the first to post!
-      </div>
-    </div>
-  </div>
-
-  <!-- ══ EVENT PAGE (placeholder) ══ -->
-  <div class="page-view" id="page-event">
-    <div class="page-title">Event</div>
-    <div class="content-card">
-      <div class="card-header">
-        <div class="card-title">Event</div>
-        <button class="btn-create">Create Event</button>
-      </div>
-      <div class="empty-state" style="display:block;">
-        <div class="empty-icon">🚀</div>
-        No events scheduled yet.
-      </div>
-    </div>
-  </div>
-
-</main>
-
-<!-- ── SAVE CONFIRMATION MODAL ── -->
-<div class="modal-overlay" id="save-modal">
-  <div class="modal-box">
-    <div class="modal-icon">📢</div>
-    <div class="modal-title">Save Announcement?</div>
-    <div class="modal-message">If you click <strong style="color:#1a1a2e;">OK</strong>, this will replace the current announcement with your new changes.</div>
-    <div class="modal-actions">
-      <button class="btn-modal-ok" onclick="confirmSave()"><strong>OK</strong></button>
-    </div>
-  </div>
-</div>
-
-<script>
-  // ── LOCALSTORAGE KEYS ──
-  const STORAGE_KEY = 'superapp_announcement';
-  const DEFAULT = {
-    title: 'RAYA RAYA RAYA PROMO 50% DISCOUNT FOR DIGITAL SPORT ARENA',
-    date:   '2025-03-06',
-    author: 'mis.intern@i-city.my'
-  };
-
-  // Load saved announcement or fall back to default
-  function loadAnnouncement() {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    return saved ? JSON.parse(saved) : { ...DEFAULT };
-  }
-
-  // Save announcement to localStorage
-  function persistAnnouncement(data) {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-  }
-
-  // Render announcement data into all pages that display it
-  function renderAnnouncement() {
-    const a = loadAnnouncement();
-    const quoted = '"' + a.title.replace(/^"|"$/g, '') + '"';
-
-    // ── Announcement list card ──
-    document.getElementById('ann-card-title').textContent   = quoted;
-    document.getElementById('ann-card-author').textContent  = 'Author: ' + a.author;
-    document.getElementById('ann-card-date').textContent    = '📅 Publish Date: ' + a.date;
-
-    // ── Detail page ──
-    document.getElementById('detail-title').textContent     = quoted;
-    document.getElementById('detail-date').textContent      = a.date;
-    document.getElementById('detail-author').textContent    = a.author;
-
-    // ── Edit page — pre-fill textarea & locked fields ──
-    const editTA = document.getElementById('edit-title');
-    editTA.value = a.title.replace(/^"|"$/g, '');
-    autoQuote(editTA);
-    document.getElementById('edit-date-display').value   = a.date;
-    document.getElementById('edit-author-display').value = a.author;
-  }
-
-  // ── NAVIGATION ──
-  function navigateTo(page, navEl) {
-    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-    if (navEl) {
-      navEl.classList.add('active');
-    } else if (['announcement-detail','announcement-edit','announcement-create'].includes(page)) {
-      document.querySelectorAll('.nav-item').forEach(n => {
-        if (n.textContent.trim().includes('Announcement')) n.classList.add('active');
-      });
-    }
-    document.querySelectorAll('.page-view').forEach(p => p.classList.remove('active'));
-    const target = document.getElementById('page-' + page);
-    if (target) target.classList.add('active');
-    if (page === 'ainews') filterCards('active', 'ainews-grid', 'ainews-empty');
-    // Reset create textarea when opening create page
-    if (page === 'announcement-create') {
-      document.getElementById('create-title').value = '';
-    }
-  }
-
-  // ── AUTO QUOTE ──
-  function autoQuote(el) {
-    let raw = el.value;
-    if (raw.startsWith('"')) raw = raw.slice(1);
-    if (raw.endsWith('"'))   raw = raw.slice(0, -1);
-    if (raw === '') { el.value = ''; return; }
-    const pos = el.selectionStart;
-    el.value = '"' + raw + '"';
-    const newPos = Math.min(pos + 1, el.value.length - 1);
-    el.setSelectionRange(newPos, newPos);
-  }
-
-  // ── SAVE (EDIT) ──
-  let pendingSaveSource = null;
-
-  function saveAnnouncement() {
-    const raw = document.getElementById('edit-title').value.replace(/^"|"$/g, '').trim();
-    if (!raw) { alert('Please enter an announcement title.'); return; }
-    pendingSaveSource = 'edit';
-    document.getElementById('save-modal').classList.add('open');
-  }
-
-  // ── SAVE (CREATE) ──
-  function saveNewAnnouncement() {
-    const raw = document.getElementById('create-title').value.replace(/^"|"$/g, '').trim();
-    if (!raw) { alert('Please enter an announcement title.'); return; }
-    pendingSaveSource = 'create';
-    document.getElementById('save-modal').classList.add('open');
-  }
-
-  // ── CONFIRM SAVE (modal OK) ──
-  function confirmSave() {
-    const a = loadAnnouncement();
-    if (pendingSaveSource === 'edit') {
-      a.title = document.getElementById('edit-title').value.replace(/^"|"$/g, '').trim();
-    } else if (pendingSaveSource === 'create') {
-      a.title = document.getElementById('create-title').value.replace(/^"|"$/g, '').trim();
-    }
-    persistAnnouncement(a);
-    renderAnnouncement();
-    document.getElementById('save-modal').classList.remove('open');
-    pendingSaveSource = null;
-    navigateTo('announcement', null);
-  }
-
-  // ── TABS ──
-  function switchTab(el, status, gridId, emptyId) {
-    el.closest('.tabs').querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-    el.classList.add('active');
-    filterCards(status, gridId, emptyId);
-  }
-
-  function filterCards(status, gridId, emptyId) {
-    const grid = document.getElementById(gridId);
-    if (!grid) return;
-    const cards = grid.querySelectorAll('.news-card');
-    let visible = 0;
-    cards.forEach(card => {
-      const show = card.dataset.status === status;
-      card.style.display = show ? 'block' : 'none';
-      if (show) visible++;
-    });
-    const empty = document.getElementById(emptyId);
-    if (empty) empty.style.display = visible === 0 ? 'block' : 'none';
-  }
-
-  // ── INIT ──
-  filterCards('active', 'ainews-grid', 'ainews-empty');
-  renderAnnouncement();
-</script>
-</body>
-</html>
+      <div cl
