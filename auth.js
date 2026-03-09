@@ -6,10 +6,10 @@ const bcrypt        = require('bcryptjs');
 const crypto        = require('crypto');
 const db            = require('./db');
 
-// ── CREATE OAUTH2 SERVER ──
+
 const server = oauth2orize.createServer();
 
-// ── PASSPORT: LOCAL STRATEGY (username + password) ──
+
 passport.use(new LocalStrategy((username, password, done) => {
   const user = db.findUserByUsername(username);
   if (!user) return done(null, false, { message: 'User not found' });
@@ -23,7 +23,7 @@ passport.use(new LocalStrategy((username, password, done) => {
 passport.serializeUser((user, done)   => done(null, user.id));
 passport.deserializeUser((id, done)   => done(null, db.findUserById(id)));
 
-// ── PASSPORT: BEARER STRATEGY (token validation) ──
+
 passport.use(new BearerStrategy((token, done) => {
   const record = db.findAccessToken(token);
   if (!record) return done(null, false);
@@ -34,14 +34,13 @@ passport.use(new BearerStrategy((token, done) => {
   return done(null, user, { scope: '*' });
 }));
 
-// ── OAUTH2ORIZE: AUTHORIZATION CODE GRANT ──
+
 server.grant(oauth2orize.grant.code((client, redirectUri, user, ares, done) => {
   const code = crypto.randomBytes(16).toString('hex');
   db.saveAuthCode(code, user.id, client.id, redirectUri);
   return done(null, code);
 }));
 
-// ── OAUTH2ORIZE: EXCHANGE AUTH CODE FOR ACCESS TOKEN ──
 server.exchange(oauth2orize.exchange.code((client, code, redirectUri, done) => {
   const authCode = db.findAuthCode(code);
 

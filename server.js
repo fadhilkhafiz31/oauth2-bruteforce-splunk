@@ -100,10 +100,8 @@ app.post('/oauth/token',
 const PORT = 3000;
 app.listen(PORT, () => {
   console.log('');
-  console.log('  ✅  SuperApp OAuth2 Server running!');
-  console.log(`  🌐  Dashboard → http://localhost:${PORT}`);
-  console.log(`  🔐  Login API → POST http://localhost:${PORT}/login`);
-  console.log(`  👤  User API  → GET  http://localhost:${PORT}/me`);
+  console.log('    Random App OAuth2 Server running!');
+  console.log(`    http://localhost:${PORT}`);
   console.log('');
   console.log('  Demo credentials:');
   console.log('  Username : admin');
