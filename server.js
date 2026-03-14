@@ -3,8 +3,24 @@ const session    = require('express-session');
 const cors       = require('cors');
 const crypto     = require('crypto');
 const path       = require('path');
+const fs         = require('fs');
 const db         = require('./db');
 const { server: oauth2server, passport } = require('./auth');
+
+// ── SECURITY LOGGER ──
+// Writes Splunk-friendly JSON logs to security.log
+// Format matches what Splunk expects for field extraction
+const LOG_FILE = path.join(__dirname, 'logs', 'security.log');
+fs.mkdirSync(path.join(__dirname, 'logs'), { recursive: true });
+
+function securityLog(event) {
+  const entry = JSON.stringify({
+    timestamp: new Date().toISOString(),
+    ...event
+  });
+  fs.appendFileSync(LOG_FILE, entry + '\n');
+  console.log('[SECURITY]', entry);
+}
 
 const app = express();
 
@@ -30,12 +46,42 @@ app.use(express.static(path.join(__dirname, 'public')));
 // ──────────────────────────────────────────
 app.post('/login', (req, res, next) => {
   passport.authenticate('local', (err, user, info) => {
-    if (err)    return res.status(500).json({ error: 'Server error' });
-    if (!user)  return res.status(401).json({ error: info.message || 'Invalid credentials' });
+    if (err) {
+      securityLog({
+        event_type: 'LOGIN_ERROR',
+        endpoint: '/login',
+        src_ip: req.ip,
+        username: req.body.username || 'unknown',
+        status: 500,
+        reason: 'server_error'
+      });
+      return res.status(500).json({ error: 'Server error' });
+    }
 
-    // Generate access token
+    if (!user) {
+      securityLog({
+        event_type: 'LOGIN_FAILED',
+        endpoint: '/login',
+        src_ip: req.ip,
+        username: req.body.username || 'unknown',
+        status: 401,
+        reason: info.message || 'invalid_credentials'
+      });
+      return res.status(401).json({ error: info.message || 'Invalid credentials' });
+    }
+
+    // Successful login
     const token = crypto.randomBytes(32).toString('hex');
     db.saveAccessToken(token, user.id, 'superapp-dashboard');
+
+    securityLog({
+      event_type: 'LOGIN_SUCCESS',
+      endpoint: '/login',
+      src_ip: req.ip,
+      username: user.username,
+      user_id: user.id,
+      status: 200
+    });
 
     return res.json({
       success: true,
@@ -89,6 +135,33 @@ app.get('/oauth/authorize',
     res.json({ transactionID: req.oauth2.transactionID, user: req.user });
   }
 );
+
+// Logging middleware for /oauth/token — runs before oauth2orize
+app.use('/oauth/token', (req, res, next) => {
+  const originalJson = res.json.bind(res);
+  const originalStatus = res.status.bind(res);
+  let statusCode = 200;
+
+  res.status = (code) => {
+    statusCode = code;
+    return originalStatus(code);
+  };
+
+  res.json = (body) => {
+    const failed = statusCode === 401 || statusCode === 400 || (body && body.error);
+    securityLog({
+      event_type: failed ? 'OAUTH_TOKEN_FAILED' : 'OAUTH_TOKEN_SUCCESS',
+      endpoint: '/oauth/token',
+      src_ip: req.ip,
+      username: req.body.username || req.body.client_id || 'unknown',
+      grant_type: req.body.grant_type || 'unknown',
+      status: statusCode,
+      reason: failed ? (body.error || 'invalid_credentials') : undefined
+    });
+    return originalJson(body);
+  };
+  next();
+});
 
 app.post('/oauth/token',
   passport.authenticate(['basic', 'local'], { session: false }),
