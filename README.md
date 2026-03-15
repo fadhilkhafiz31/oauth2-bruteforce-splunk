@@ -174,5 +174,3 @@ done
 - [Burp Suite Intruder](https://portswigger.net/burp/documentation/desktop/tools/intruder)
 
 ---
-
-*Part of an ongoing hands-on cybersecurity series. Follow along on LinkedIn.*
