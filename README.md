@@ -75,11 +75,17 @@ The `$2a$10$` prefix tells you exactly how it was hashed — algorithm, version,
 5. Fired 30 requests — 29 returned `401`, 1 returned `200`
 6. **Payload 27 — `admin123` — cracked**
 
+![Burp Suite Intruder setup — payload position on password field](images/burpsuite-intruder-setup.png)
+
+![Burp Suite Intruder results — payload 27 returns status 200](images/burpsuite-intruder-results.png)
+
 ### Security Log Output (sample)
 ```json
 {"timestamp":"2026-03-15T02:40:11.319Z","event_type":"LOGIN_SUCCESS","endpoint":"/login","src_ip":"::ffff:127.0.0.1","username":"admin","user_id":"1","status":200}
 {"timestamp":"2026-03-15T02:40:12.630Z","event_type":"LOGIN_FAILED","endpoint":"/login","src_ip":"::ffff:127.0.0.1","username":"admin","status":401,"reason":"Wrong password"}
 ```
+
+![Security log output in terminal showing LOGIN_FAILED and LOGIN_SUCCESS events](images/security-log-output.png)
 
 ---
 
@@ -100,6 +106,8 @@ index=main sourcetype=_json
 | where count >= 10
 ```
 
+![Splunk brute-force detection query results](images/splunk-detection-query.png)
+
 ### Dashboard Panels
 
 | Panel | Chart Type | SPL |
@@ -115,6 +123,10 @@ index=main sourcetype=_json
 - Attack spike clearly visible on timeline
 - `admin` was the only targeted username
 - Same IP correlated across all event types
+
+![Splunk dashboard — full view with all panels](images/splunk-dashboard-overview.png)
+
+![Splunk attack timeline — spike of LOGIN_FAILED events](images/splunk-attack-timeline.png)
 
 ---
 
@@ -164,6 +176,12 @@ done
 - Settings → Data Inputs → Files & Directories
 - Path: `/path/to/logs/security.log`
 - Source type: `_json`
+
+---
+
+## 🖼 Screenshots
+
+Screenshots are stored in the [`images/`](images/) directory. See [`images/README.md`](images/README.md) for the list of expected filenames and instructions on how to add your own.
 
 ---
 
