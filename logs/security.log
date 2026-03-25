@@ -1,0 +1,4 @@
+{"timestamp":"2026-03-17T03:39:42.409Z","event_type":"LOGIN_SUCCESS","endpoint":"/login","src_ip":"::1","username":"admin","user_id":"1","status":200}
+{"timestamp":"2026-03-17T03:47:24.602Z","event_type":"LOGIN_SUCCESS","endpoint":"/login","src_ip":"::1","username":"admin","user_id":"1","status":200}
+{"timestamp":"2026-03-17T03:48:42.334Z","event_type":"LOGIN_FAILED","endpoint":"/login","src_ip":"::1","username":"admin","status":401,"reason":"Wrong password"}
+{"timestamp":"2026-03-24T14:59:33.576Z","event_type":"LOGIN_SUCCESS","endpoint":"/login","src_ip":"::1","username":"admin","user_id":"1","status":200}
