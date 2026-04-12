@@ -1,4 +1,4 @@
-require('dotenv').config();  // add this as line 1 of server.js
+require('dotenv').config(); // ADD THIS AS LINE 1
 const express    = require('express');
 const session    = require('express-session');
 const cors       = require('cors');
@@ -34,8 +34,15 @@ app.use(express.urlencoded({ extended: true }));
 app.use(session({
   secret: process.env.SESSION_SECRET,
   resave: false,
-  saveUninitialized: false
-}));
+  saveUninitialized: false,
+  cookie: {
+      httpOnly: true,
+      sameSite: "lax",
+      secure: process.env.NODE_ENV === "production",
+      maxAge: 1000 * 60 * 60 // 1 hour
+    }
+  })
+);
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(express.static(path.join(__dirname, 'public')));
